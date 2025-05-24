@@ -1,0 +1,53 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Game Jam Requirements Guide
+
+## Devs That Jam 36-Hour Challenge #14
+- **Theme**: FARMING (must be clearly incorporated)
+- **Duration**: 36 hours total development time
+- **Platform**: Browser-playable on itch.io (preferred)
+- **File size**: Under 1GB
+- **Submission deadline**: Check jam page for exact time
+
+## Rating Criteria (Priority Order)
+1. **Experience**: Fun, engaging gameplay - focus on addictive core loop
+2. **Theme**: Farming elements must be central, not superficial
+3. **Functionality**: Bug-free, intuitive mechanics
+4. **Visuals**: Cohesive art style, readable UI
+5. **Audio**: Satisfying sound effects (music optional)
+6. **Polish**: Complete, finished feel
+
+## Submission Checklist from Design
+Reference [DESIGN.md](mdc:DESIGN.md) submission requirements:
+- [ ] Browser-playable version
+- [ ] Game incorporates farming theme
+- [ ] Under 1GB file size
+- [ ] Game description/instructions
+- [ ] Screenshots for itch.io page
+- [ ] Cover image
+
+## Farming Theme Integration
+- Grid represents farm plots
+- Crops with realistic growth patterns
+- Harvest mechanics for scoring
+- Agricultural terminology in UI
+- Farm-appropriate visual style
+
+## Technical Requirements
+- **Browser compatibility**: Test in Chrome, Firefox, Safari
+- **Mobile-friendly**: Responsive design for touch devices
+- **Loading time**: Optimize assets for quick loading
+- **No dependencies**: Self-contained HTML5 game
+
+## Final Hours Priorities
+1. Bug fixing and polish
+2. Screenshot capture
+3. Itch.io page setup
+4. Game description writing
+5. Final playtesting
+
+Always keep the farming theme central to every design decision!
+

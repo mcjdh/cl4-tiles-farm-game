@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌾 Harvest Tactics</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1>🌾 Harvest Tactics</h1>
+            <div class="game-stats">
+                <div class="stat">
+                    <span class="stat-label">Score:</span>
+                    <span id="score" class="stat-value">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Turns Left:</span>
+                    <span id="turns" class="stat-value">25</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="game-main">
+            <div class="game-area">
+                <canvas id="gameCanvas" width="640" height="640"></canvas>
+            </div>
+            
+            <aside class="game-sidebar">
+                <div class="current-crop">
+                    <h3>Current Crop</h3>
+                    <div id="currentCrop" class="crop-preview">
+                        <div class="crop-icon">🌱</div>
+                        <div class="crop-info">
+                            <div class="crop-name">Wheat</div>
+                            <div class="crop-stats">
+                                <span class="stat-item">Size: <span id="cropSize">1x1</span></span>
+                                <span class="stat-item">Growth: <span id="cropGrowth">2 turns</span></span>
+                                <span class="stat-item">Value: <span id="cropValue">10 pts</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="game-controls">
+                    <button id="endTurnBtn" class="btn-primary">End Turn</button>
+                    <button id="harvestBtn" class="btn-secondary">Harvest All</button>
+                    <button id="helpBtn" class="btn-info">❓ Help</button>
+                </div>
+                
+                <div class="score-breakdown">
+                    <h3>Last Harvest</h3>
+                    <div id="scoreDetails" class="score-details">
+                        <div class="score-line">Click crops to see details</div>
+                    </div>
+                </div>
+                
+                <div class="next-crops">
+                    <h3>Next Crops</h3>
+                    <div id="nextCrops" class="crop-queue">
+                        <div class="crop-preview small">🌽</div>
+                        <div class="crop-preview small">🎃</div>
+                        <div class="crop-preview small">🥕</div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <div id="gameOverScreen" class="game-over hidden">
+            <div class="game-over-content">
+                <h2>🌾 Harvest Complete!</h2>
+                <p class="final-score">Final Score: <span id="finalScore">0</span></p>
+                <div id="gameStats" class="game-stats-final"></div>
+                <button id="restartBtn" class="btn-primary">Plant Again</button>
+            </div>
+        </div>
+
+        <div id="helpModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>🌾 How to Play Harvest Tactics</h2>
+                    <button id="closeHelp" class="close-btn">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="help-section">
+                        <h3>🎯 Goal</h3>
+                        <p>Score as many points as possible in 25 turns by strategically planting and harvesting crops!</p>
+                    </div>
+                    
+                    <div class="help-section">
+                        <h3>🌱 Crop Types</h3>
+                        <div class="crop-help-grid">
+                            <div class="crop-help-item">
+                                <span class="crop-icon">🌾</span>
+                                <div>
+                                    <strong>Wheat</strong><br>
+                                    Size: 1×1 | Growth: 2 turns | Value: 10+4 pts<br>
+                                    <em>Fast and reliable, great for filling gaps</em>
+                                </div>
+                            </div>
+                            <div class="crop-help-item">
+                                <span class="crop-icon">🌽</span>
+                                <div>
+                                    <strong>Corn</strong><br>
+                                    Size: 1×2 | Growth: 3 turns | Value: 25+6 pts<br>
+                                    <em>Vertical crop, good value per space</em>
+                                </div>
+                            </div>
+                            <div class="crop-help-item">
+                                <span class="crop-icon">🎃</span>
+                                <div>
+                                    <strong>Pumpkin</strong><br>
+                                    Size: 2×2 | Growth: 4 turns | Value: 50+8 pts<br>
+                                    <em>Takes time and space but high value</em>
+                                </div>
+                            </div>
+                            <div class="crop-help-item">
+                                <span class="crop-icon">🥕</span>
+                                <div>
+                                    <strong>Carrot</strong><br>
+                                    Size: 1×1 | Growth: Instant | Value: 15 pts<br>
+                                    <em>Harvest immediately for quick points</em>
+                                </div>
+                            </div>
+                            <div class="crop-help-item">
+                                <span class="crop-icon">🫐</span>
+                                <div>
+                                    <strong>Berry Bush</strong><br>
+                                    Size: 2×1 | Growth: 3 turns | Value: 30+6 pts<br>
+                                    <em>Horizontal crop, solid mid-range option</em>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="help-section">
+                        <h3>⚡ Synergy Bonuses</h3>
+                        <p><strong>Same Type:</strong> +5 points when crops of the same type are adjacent</p>
+                        <p><strong>Special Combos:</strong></p>
+                        <ul>
+                            <li>Wheat + Corn: +3 bonus points</li>
+                            <li>Carrot + Berry Bush: +4 bonus points</li>
+                            <li>Pumpkin + Wheat: +2 bonus points</li>
+                            <li>Any other adjacent crops: +1 bonus point</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="help-section">
+                        <h3>🎮 Controls</h3>
+                        <p><strong>Mouse:</strong> Click to place crops</p>
+                        <p><strong>Space/Enter:</strong> End turn</p>
+                        <p><strong>H:</strong> Harvest all ready crops</p>
+                        <p><strong>Ctrl+R:</strong> Restart game</p>
+                    </div>
+                    
+                    <div class="help-section">
+                        <h3>💡 Strategy Tips</h3>
+                        <ul>
+                            <li>Plan ahead - faster crops first, then slower ones</li>
+                            <li>Group same crops together for synergy bonuses</li>
+                            <li>Use carrots to fill gaps and get immediate points</li>
+                            <li>Pumpkins are worth it if you have time to grow them</li>
+                            <li>Don't waste turns - if you can't place, end turn early</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="crops.js"></script>
+    <script src="grid.js"></script>
+    <script src="game.js"></script>
+    <script src="ui.js"></script>
+</body>
+</html> 

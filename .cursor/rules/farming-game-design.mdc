@@ -1,0 +1,37 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Farming Game Design Guide
+
+## Core Concept
+This is **Harvest Tactics** - a turn-based grid-based farming puzzle game for the Devs That Jam 36-hour challenge. The complete design specification is in [DESIGN.md](mdc:DESIGN.md).
+
+## Key Design Principles
+- **Minimal code, maximum depth**: Simple mechanics that create strategic gameplay
+- **36-hour timeline**: Prioritize core gameplay over complex features
+- **Browser-first**: HTML5/Canvas for easy itch.io deployment
+- **Polish focus**: Last 8 hours dedicated to juice and game feel
+
+## Development Priority Order
+1. **Phase 1 (Hours 1-8)**: Core prototype - grid, placement, basic crops, turns
+2. **Phase 2 (Hours 9-16)**: Full gameplay - all crops, synergies, complete UI
+3. **Phase 3 (Hours 17-24)**: Polish - art, audio, bug fixes, submission prep
+
+## Core Mechanics to Implement
+- 8x8 farm grid with tile placement
+- 5 crop types with different sizes and growth patterns
+- Turn-based progression system
+- Scoring with crop synergies
+- Strategic resource management
+
+## Success Criteria
+- Fun, replayable gameplay loop
+- Clear farming theme throughout
+- Intuitive mechanics requiring no explanation
+- Smooth browser performance
+- Complete, polished submission
+
+Always refer to [DESIGN.md](mdc:DESIGN.md) for detailed implementation checklists and specific requirements.
+

@@ -1,0 +1,43 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Technical Implementation Guide
+
+## Tech Stack
+- **HTML5 + Canvas + JavaScript**: Maximum browser compatibility, rapid iteration
+- **No frameworks**: Keep it simple for 36-hour timeline
+- **Local storage**: High scores and basic persistence
+
+## Code Architecture
+- **Game state object**: Central state management
+- **Grid system**: 2D array for farm layout
+- **Crop objects**: Simple data structures with growth logic
+- **Input handling**: Mouse/touch for tile placement
+- **Render loop**: Canvas-based drawing with animation frame
+
+## File Structure Priority
+1. `index.html` - Basic HTML structure and canvas
+2. `game.js` - Core game logic and state management
+3. `grid.js` - Grid rendering and placement mechanics
+4. `crops.js` - Crop definitions and growth system
+5. `ui.js` - Interface and visual feedback
+6. `style.css` - UI styling and layout
+
+## Implementation Strategy
+- **Start simple**: Get basic grid placement working first
+- **Incremental features**: Add one crop type, then gradually expand
+- **Test frequently**: Playtest after each major feature
+- **Performance first**: Keep render loop efficient for smooth gameplay
+
+## Key Technical Checkboxes from Design
+Reference [DESIGN.md](mdc:DESIGN.md) for the complete technical implementation checklist, including:
+- HTML5 Canvas setup
+- Game state management
+- Grid data structure
+- Input handling
+- Animation frame management
+
+Focus on getting the MVP working before adding complexity.
+
