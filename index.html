@@ -19,7 +19,12 @@
                     <span class="stat-label">Turns Left:</span>
                     <span id="turns" class="stat-value">25</span>
                 </div>
+                <div class="stat">
+                    <span class="stat-label">Actions:</span>
+                    <span id="turnProgress" class="stat-value turn-progress">3 actions left</span>
+                </div>
             </div>
+            <div id="turnHint" class="turn-hint" style="display: none;">Continue planting or wait for auto-advance</div>
         </header>
 
         <main class="game-main">
@@ -86,7 +91,8 @@
                 <div class="modal-body">
                     <div class="help-section">
                         <h3>🎯 Goal</h3>
-                        <p>Score as many points as possible in 25 turns by strategically planting and harvesting crops!</p>
+                        <p>Score as many points as possible in 20 turns by strategically planting and harvesting crops!</p>
+                        <p><strong>NEW:</strong> Plant up to 3 crops per turn! Take your time to plan - turns only advance when you use all actions or manually end your turn.</p>
                     </div>
                     
                     <div class="help-section">
@@ -152,17 +158,19 @@
                         <p><strong>Mouse:</strong> Click to place crops</p>
                         <p><strong>Space/Enter:</strong> End turn</p>
                         <p><strong>H:</strong> Harvest all ready crops</p>
+                        <p><strong>End Turn:</strong> Advance to next turn early</p>
                         <p><strong>Ctrl+R:</strong> Restart game</p>
                     </div>
                     
                     <div class="help-section">
                         <h3>💡 Strategy Tips</h3>
                         <ul>
-                            <li>Plan ahead - faster crops first, then slower ones</li>
+                            <li>Plan your 3 actions per turn strategically</li>
+                            <li>Plant faster crops first, then commit to slower ones</li>
                             <li>Group same crops together for synergy bonuses</li>
                             <li>Use carrots to fill gaps and get immediate points</li>
-                            <li>Pumpkins are worth it if you have time to grow them</li>
-                            <li>Don't waste turns - if you can't place, end turn early</li>
+                            <li>Final 5 turns give you +1 extra action per turn!</li>
+                            <li>Watch for rare crops (⭐) - they're worth the wait!</li>
                         </ul>
                     </div>
                 </div>

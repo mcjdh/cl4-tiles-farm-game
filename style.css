@@ -41,6 +41,7 @@ body {
 .game-stats {
     display: flex;
     gap: 30px;
+    flex-wrap: wrap;
 }
 
 .stat {
@@ -59,6 +60,47 @@ body {
     font-size: 1.8rem;
     font-weight: bold;
     color: #2F4F2F;
+}
+
+/* Turn Progress Indicator */
+.turn-progress {
+    font-size: 1.4rem !important;
+    color: #228B22 !important;
+}
+
+.turn-progress.depleted {
+    color: #FF6B6B !important;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+/* Turn Hint */
+.turn-hint {
+    background: rgba(34, 139, 34, 0.9);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 10px;
+    animation: fadeIn 0.3s ease;
+}
+
+.turn-hint.forced {
+    background: rgba(255, 107, 107, 0.9);
+}
+
+.turn-hint.optional {
+    background: rgba(70, 130, 180, 0.9);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* Main Game Area */
@@ -182,6 +224,15 @@ body {
     background: #32CD32;
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(34, 139, 34, 0.4);
+}
+
+.btn-primary.skip-mode {
+    background: #4682B4;
+    animation: pulse 1.5s infinite;
+}
+
+.btn-primary.skip-mode:hover {
+    background: #5A9BD3;
 }
 
 .btn-secondary {

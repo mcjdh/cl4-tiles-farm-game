@@ -1,22 +1,24 @@
 // Crop definitions and management system
 class CropType {
-    constructor(name, icon, size, growthTime, baseValue, color) {
+    constructor(name, icon, size, growthTime, baseValue, color, rarity = 1.0) {
         this.name = name;
         this.icon = icon;
         this.size = size; // {width, height} in grid cells
         this.growthTime = growthTime; // turns to mature
         this.baseValue = baseValue; // base score when harvested
         this.color = color; // background color for display
+        this.rarity = rarity; // spawn frequency (0.1 = 10% chance, 1.0 = 100% base chance)
     }
 }
 
 // Define the 5 crop types from our design
+// Balanced for value per space per turn efficiency with strategic rarity
 const CROP_TYPES = {
-    WHEAT: new CropType('Wheat', '🌾', {width: 1, height: 1}, 2, 10, '#F5DEB3'),
-    CORN: new CropType('Corn', '🌽', {width: 1, height: 2}, 3, 25, '#FFD700'),
-    PUMPKIN: new CropType('Pumpkin', '🎃', {width: 2, height: 2}, 4, 50, '#FF7F50'),
-    CARROT: new CropType('Carrot', '🥕', {width: 1, height: 1}, 0, 15, '#FFA500'), // instant harvest
-    BERRY: new CropType('Berry Bush', '🫐', {width: 2, height: 1}, 3, 30, '#8A2BE2')
+    WHEAT: new CropType('Wheat', '🌾', {width: 1, height: 1}, 2, 8, '#F5DEB3', 1.2),     // Common, reliable
+    CORN: new CropType('Corn', '🌽', {width: 1, height: 2}, 3, 20, '#FFD700', 0.8),      // Uncommon, efficient
+    PUMPKIN: new CropType('Pumpkin', '🎃', {width: 2, height: 2}, 4, 60, '#FF7F50', 0.4), // Rare, high value
+    CARROT: new CropType('Carrot', '🥕', {width: 1, height: 1}, 0, 12, '#FFA500', 1.0),  // Standard instant gratification
+    BERRY: new CropType('Berry Bush', '🫐', {width: 2, height: 1}, 3, 28, '#8A2BE2', 0.6) // Somewhat rare, good synergies
 };
 
 // Growth stages for visual representation
@@ -96,12 +98,17 @@ class Crop {
     calculateScore() {
         let score = this.type.baseValue;
         
-        // Add age bonus for crops that took longer to grow
+        // Add age bonus for crops that took longer to grow (patience reward)
         if (this.type.growthTime > 0) {
-            score += this.type.growthTime * 2;
+            score += Math.floor(this.type.growthTime * 1.5); // Reduced from 2 to balance
         }
         
-        return score;
+        // Early harvest penalty (optional - encourages timing strategy)
+        if (this.currentAge < this.type.growthTime && this.type.growthTime > 0) {
+            score = Math.floor(score * 0.7); // 30% penalty for early harvest
+        }
+        
+        return Math.max(1, score); // Minimum 1 point
     }
 
     // Check if crop occupies a specific grid position
@@ -126,10 +133,20 @@ class Crop {
 
 // Crop management utility functions
 const CropManager = {
-    // Get random crop type for tile drawing
+    // Get random crop type for tile drawing (weighted by rarity)
     getRandomCropType() {
         const types = Object.values(CROP_TYPES);
-        return types[Math.floor(Math.random() * types.length)];
+        
+        // Create weighted pool based on rarity values
+        const weightedPool = [];
+        for (const type of types) {
+            const weight = Math.max(1, Math.floor(type.rarity * 10)); // Convert to integer weights
+            for (let i = 0; i < weight; i++) {
+                weightedPool.push(type);
+            }
+        }
+        
+        return weightedPool[Math.floor(Math.random() * weightedPool.length)];
     },
 
     // Check if a crop can be placed at the given position
@@ -179,21 +196,33 @@ const CropManager = {
 
     // Define synergy bonuses between crop types
     getSynergyBonus(type1, type2) {
-        // Same type bonus
+        // Same type clustering bonus (diminishing returns)
         if (type1.name === type2.name) {
-            return 5;
+            return 3; // Reduced from 5 to encourage diversity
         }
         
-        // Specific combinations
+        // Strategic crop combinations with thematic logic
         const synergies = {
-            'Wheat-Corn': 3,
-            'Carrot-Berry Bush': 4,
-            'Pumpkin-Wheat': 2
+            // Complementary growth cycles
+            'Wheat-Corn': 4,      // Traditional companion planting
+            'Carrot-Berry Bush': 6, // Root vegetables with perennials
+            'Pumpkin-Corn': 5,    // Three Sisters farming technique
+            
+            // Soil improvement combinations
+            'Wheat-Carrot': 3,   // Grain + root crop rotation
+            'Berry Bush-Wheat': 4, // Perennial + annual balance
+            
+            // Size-based efficiency
+            'Corn-Berry Bush': 2, // Both tall crops work well together
+            'Carrot-Wheat': 2,   // Both quick-growing small crops
+            
+            // Strategic timing
+            'Pumpkin-Carrot': 3  // Long-term + instant harvest balance
         };
         
         const key1 = `${type1.name}-${type2.name}`;
         const key2 = `${type2.name}-${type1.name}`;
         
-        return synergies[key1] || synergies[key2] || 1; // Default small bonus
+        return synergies[key1] || synergies[key2] || 1; // Minimum 1 point bonus for any adjacency
     }
 }; 

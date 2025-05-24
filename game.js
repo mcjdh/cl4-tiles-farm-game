@@ -6,13 +6,20 @@ class GridGardenGame {
         
         // Game state
         this.currentTurn = 0;
-        this.maxTurns = 25;
+        this.maxTurns = 20; // Reduced from 25 to 20 for tighter, more strategic gameplay
         this.score = 0;
         this.gameOver = false;
         
         // Crop queue system
         this.currentCropType = null;
         this.nextCrops = [];
+        
+        // Action-based turn system
+        this.cropsPlacedThisTurn = 0;
+        this.maxCropsPerTurn = 3; // Players can place up to 3 crops per turn
+        
+        // Dynamic difficulty scaling
+        this.baseMaxCropsPerTurn = 3;
         
         this.init();
     }
@@ -96,7 +103,7 @@ class GridGardenGame {
     }
 
     onCropPlaced(crop) {
-        console.log(`Planted ${crop.type.name}! Moving to next crop.`);
+        console.log(`Planted ${crop.type.name}! (${this.cropsPlacedThisTurn + 1}/${this.maxCropsPerTurn} this turn)`);
         
         // Play placement sound
         if (window.audioManager) {
@@ -110,6 +117,9 @@ class GridGardenGame {
             this.particleSystem.placementEffect(x, y);
         }
         
+        // Track crops placed this turn
+        this.cropsPlacedThisTurn++;
+        
         // Move to next crop in queue
         this.advanceCropQueue();
         
@@ -117,10 +127,8 @@ class GridGardenGame {
         this.updateCropUI();
         this.updateStatsUI();
         
-        // Check if player should auto-advance turn
-        if (this.shouldAutoAdvanceTurn()) {
-            setTimeout(() => this.endTurn(), 500); // Small delay for better UX
-        }
+        // Check if turn should advance
+        this.checkTurnAdvancement();
     }
 
     advanceCropQueue() {
@@ -132,25 +140,63 @@ class GridGardenGame {
         }
     }
 
-    shouldAutoAdvanceTurn() {
-        // Auto-advance if current crop can't be placed anywhere
+    checkTurnAdvancement() {
+        // Check various conditions for turn advancement
+        const canPlaceCurrentCrop = this.canPlaceCurrentCrop();
+        const reachedCropLimit = this.cropsPlacedThisTurn >= this.maxCropsPerTurn;
+        
+        if (!canPlaceCurrentCrop || reachedCropLimit) {
+            // Auto-advance turn when forced (no valid placements or hit action limit)
+            this.showTurnAdvanceHint();
+            setTimeout(() => this.endTurn(), 500); // Brief delay for visual feedback
+        } else {
+            // Player can continue - hide any hints
+            this.hideTurnAdvanceHint();
+        }
+    }
+    
+    showTurnAdvanceHint() {
+        const turnHint = document.getElementById('turnHint');
+        if (!turnHint) return;
+        
+        const canPlace = this.canPlaceCurrentCrop();
+        const reachedLimit = this.cropsPlacedThisTurn >= this.maxCropsPerTurn;
+        
+        if (!canPlace) {
+            turnHint.textContent = 'No valid placements - advancing turn...';
+            turnHint.className = 'turn-hint forced';
+        } else if (reachedLimit) {
+            turnHint.textContent = `All ${this.maxCropsPerTurn} actions used - advancing turn...`;
+            turnHint.className = 'turn-hint forced';
+        }
+        
+        turnHint.style.display = 'block';
+    }
+    
+    hideTurnAdvanceHint() {
+        const turnHint = document.getElementById('turnHint');
+        if (turnHint) {
+            turnHint.style.display = 'none';
+        }
+    }
+    
+    canPlaceCurrentCrop() {
         if (!this.currentCropType) return false;
         
         for (let x = 0; x < this.grid.width; x++) {
             for (let y = 0; y < this.grid.height; y++) {
                 if (CropManager.canPlaceCrop(this.grid, this.currentCropType, x, y)) {
-                    return false; // Can still place somewhere
+                    return true;
                 }
             }
         }
-        
-        return true; // No valid placements left
+        return false;
     }
 
     endTurn() {
         if (this.gameOver) return;
         
-        console.log(`Turn ${this.currentTurn + 1} ending...`);
+        console.log(`Turn ${this.currentTurn + 1} ending... (${this.cropsPlacedThisTurn} crops placed)`);
         
         // Play turn sound
         if (window.audioManager) {
@@ -159,6 +205,17 @@ class GridGardenGame {
         
         // Advance turn counter
         this.currentTurn++;
+        
+        // Reset crops placed counter for new turn
+        this.cropsPlacedThisTurn = 0;
+        
+        // Dynamic turn scaling - more actions in final turns for excitement
+        const turnsRemaining = this.maxTurns - this.currentTurn;
+        if (turnsRemaining <= 5) {
+            this.maxCropsPerTurn = this.baseMaxCropsPerTurn + 1; // Extra action in final stretch
+        } else {
+            this.maxCropsPerTurn = this.baseMaxCropsPerTurn;
+        }
         
         // Grow all crops
         this.grid.advanceTurn();
@@ -210,10 +267,26 @@ class GridGardenGame {
     }
 
     addScore(points) {
-        this.score += points;
+        // Apply end-game multiplier for final turns excitement
+        let finalPoints = points;
+        const turnsRemaining = this.maxTurns - this.currentTurn;
+        
+        if (turnsRemaining <= 3) {
+            // Increasing multiplier in final turns
+            const multiplier = turnsRemaining === 0 ? 2.0 : 
+                              turnsRemaining === 1 ? 1.8 : 
+                              turnsRemaining === 2 ? 1.5 : 1.2;
+            finalPoints = Math.floor(points * multiplier);
+            
+            if (finalPoints > points) {
+                console.log(`Final turns bonus: ${points} → ${finalPoints} (${multiplier}x)`);
+            }
+        }
+        
+        this.score += finalPoints;
         
         // Play score sound
-        if (window.audioManager && points > 0) {
+        if (window.audioManager && finalPoints > 0) {
             window.audioManager.play('score');
         }
         
@@ -223,10 +296,11 @@ class GridGardenGame {
         // Create floating score text
         const scoreElement = document.getElementById('score');
         const rect = scoreElement.getBoundingClientRect();
-        UIAnimations.floatingText(`+${points}`, rect.right + 10, rect.top);
+        const displayText = finalPoints > points ? `+${finalPoints} (${points}×${(finalPoints/points).toFixed(1)})` : `+${finalPoints}`;
+        UIAnimations.floatingText(displayText, rect.right + 10, rect.top);
         
         // Animate score increase (simple version)
-        this.animateScoreIncrease(points);
+        this.animateScoreIncrease(finalPoints);
     }
 
     animateScoreIncrease(points) {
@@ -245,6 +319,14 @@ class GridGardenGame {
 
     endGame() {
         this.gameOver = true;
+        
+        // Calculate final efficiency bonuses
+        const efficiencyBonus = this.calculateFinalEfficiencyBonus();
+        if (efficiencyBonus > 0) {
+            this.score += efficiencyBonus;
+            console.log(`Efficiency bonus: +${efficiencyBonus} points!`);
+        }
+        
         console.log(`Game Over! Final Score: ${this.score}`);
         
         // Play game over sound
@@ -261,11 +343,40 @@ class GridGardenGame {
         this.saveHighScore();
     }
 
+    calculateFinalEfficiencyBonus() {
+        const gridSize = this.grid.width * this.grid.height;
+        let occupiedSpaces = 0;
+        
+        // Count all spaces that have been used for crops
+        for (const crop of this.grid.crops) {
+            if (!crop.isHarvested) {
+                occupiedSpaces += crop.type.size.width * crop.type.size.height;
+            }
+        }
+        
+        const utilization = occupiedSpaces / gridSize;
+        let bonus = 0;
+        
+        // Efficiency tier bonuses
+        if (utilization >= 0.9) {
+            bonus = 100; // Master Farmer: 90%+ utilization
+        } else if (utilization >= 0.75) {
+            bonus = 60;  // Expert Farmer: 75%+ utilization
+        } else if (utilization >= 0.6) {
+            bonus = 30;  // Good Farmer: 60%+ utilization
+        } else if (utilization >= 0.45) {
+            bonus = 10;  // Decent Farmer: 45%+ utilization
+        }
+        
+        return bonus;
+    }
+
     restart() {
         // Reset game state
         this.currentTurn = 0;
         this.score = 0;
         this.gameOver = false;
+        this.cropsPlacedThisTurn = 0;
         
         // Clear grid
         this.grid.crops = [];
@@ -275,6 +386,10 @@ class GridGardenGame {
         
         // Hide game over screen
         document.getElementById('gameOverScreen').classList.add('hidden');
+        
+        // Hide turn hint
+        const turnHint = document.getElementById('turnHint');
+        if (turnHint) turnHint.style.display = 'none';
         
         // Update UI
         this.updateStatsUI();
@@ -286,6 +401,27 @@ class GridGardenGame {
     updateStatsUI() {
         document.getElementById('score').textContent = this.score;
         document.getElementById('turns').textContent = this.maxTurns - this.currentTurn;
+        
+        // Update turn progress indicator
+        const turnProgress = document.getElementById('turnProgress');
+        if (turnProgress) {
+            const remaining = this.maxCropsPerTurn - this.cropsPlacedThisTurn;
+            turnProgress.textContent = `${remaining} actions left`;
+            turnProgress.className = remaining === 0 ? 'turn-progress depleted' : 'turn-progress';
+        }
+        
+        // Update end turn button state
+        const endTurnBtn = document.getElementById('endTurnBtn');
+        if (endTurnBtn) {
+            const actionsLeft = this.maxCropsPerTurn - this.cropsPlacedThisTurn;
+            if (actionsLeft > 0) {
+                endTurnBtn.textContent = `End Turn (${actionsLeft} actions left)`;
+                endTurnBtn.classList.remove('skip-mode');
+            } else {
+                endTurnBtn.textContent = 'End Turn';
+                endTurnBtn.classList.remove('skip-mode');
+            }
+        }
     }
 
     updateCropUI() {
@@ -293,13 +429,28 @@ class GridGardenGame {
         const currentCropEl = document.getElementById('currentCrop');
         if (this.currentCropType) {
             currentCropEl.querySelector('.crop-icon').textContent = this.currentCropType.icon;
-            currentCropEl.querySelector('.crop-name').textContent = this.currentCropType.name;
+            
+            // Add rarity indicator to crop name
+            const rarity = this.currentCropType.rarity;
+            let rarityIndicator = '';
+            if (rarity <= 0.4) rarityIndicator = ' ⭐⭐⭐'; // Legendary
+            else if (rarity <= 0.6) rarityIndicator = ' ⭐⭐';   // Rare
+            else if (rarity <= 0.8) rarityIndicator = ' ⭐';     // Uncommon
+            
+            currentCropEl.querySelector('.crop-name').textContent = this.currentCropType.name + rarityIndicator;
             currentCropEl.style.borderColor = this.currentCropType.color;
+            
+            // Add glow effect for rare crops
+            if (rarity <= 0.6) {
+                currentCropEl.style.boxShadow = `0 0 10px ${this.currentCropType.color}`;
+            } else {
+                currentCropEl.style.boxShadow = '';
+            }
             
             // Update crop stats
             const size = `${this.currentCropType.size.width}×${this.currentCropType.size.height}`;
             const growth = this.currentCropType.growthTime === 0 ? 'Instant' : `${this.currentCropType.growthTime} turns`;
-            const value = `${this.currentCropType.baseValue}${this.currentCropType.growthTime > 0 ? '+' + (this.currentCropType.growthTime * 2) : ''} pts`;
+            const value = `${this.currentCropType.baseValue}${this.currentCropType.growthTime > 0 ? '+' + Math.floor(this.currentCropType.growthTime * 1.5) : ''} pts`;
             
             document.getElementById('cropSize').textContent = size;
             document.getElementById('cropGrowth').textContent = growth;
@@ -316,11 +467,19 @@ class GridGardenGame {
             cropDiv.innerHTML = `<div class="crop-icon">${cropType.icon}</div>`;
             cropDiv.style.borderColor = cropType.color;
             
-            // Enhanced tooltip with stats
+            // Add visual rarity indicators
+            const rarity = cropType.rarity;
+            if (rarity <= 0.6) {
+                cropDiv.style.boxShadow = `0 0 5px ${cropType.color}`;
+                cropDiv.style.borderWidth = '2px';
+            }
+            
+            // Enhanced tooltip with stats and rarity
             const size = `${cropType.size.width}×${cropType.size.height}`;
             const growth = cropType.growthTime === 0 ? 'Instant' : `${cropType.growthTime} turns`;
-            const value = `${cropType.baseValue}${cropType.growthTime > 0 ? '+' + (cropType.growthTime * 2) : ''} pts`;
-            cropDiv.title = `${cropType.name}\nSize: ${size} | Growth: ${growth} | Value: ${value}`;
+            const value = `${cropType.baseValue}${cropType.growthTime > 0 ? '+' + Math.floor(cropType.growthTime * 1.5) : ''} pts`;
+            const rarityText = rarity <= 0.4 ? ' (Legendary)' : rarity <= 0.6 ? ' (Rare)' : rarity <= 0.8 ? ' (Uncommon)' : '';
+            cropDiv.title = `${cropType.name}${rarityText}\nSize: ${size} | Growth: ${growth} | Value: ${value}`;
             
             nextCropsEl.appendChild(cropDiv);
         }
