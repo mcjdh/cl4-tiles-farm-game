@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌾 Harvest Tactics</title>
+    <title>🌿 Grid Garden</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="game-container">
         <header class="game-header">
-            <h1>🌾 Harvest Tactics</h1>
+            <h1>🌿 Grid Garden</h1>
             <div class="game-stats">
                 <div class="stat">
                     <span class="stat-label">Score:</span>
@@ -47,6 +47,7 @@
                     <button id="endTurnBtn" class="btn-primary">End Turn</button>
                     <button id="harvestBtn" class="btn-secondary">Harvest All</button>
                     <button id="helpBtn" class="btn-info">❓ Help</button>
+                    <button id="audioBtn" class="btn-audio">🔊 Audio</button>
                 </div>
                 
                 <div class="score-breakdown">
@@ -69,7 +70,7 @@
 
         <div id="gameOverScreen" class="game-over hidden">
             <div class="game-over-content">
-                <h2>🌾 Harvest Complete!</h2>
+                <h2>🌿 Garden Complete!</h2>
                 <p class="final-score">Final Score: <span id="finalScore">0</span></p>
                 <div id="gameStats" class="game-stats-final"></div>
                 <button id="restartBtn" class="btn-primary">Plant Again</button>
@@ -79,7 +80,7 @@
         <div id="helpModal" class="modal hidden">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h2>🌾 How to Play Harvest Tactics</h2>
+                    <h2>🌿 How to Play Grid Garden</h2>
                     <button id="closeHelp" class="close-btn">×</button>
                 </div>
                 <div class="modal-body">
@@ -169,6 +170,8 @@
         </div>
     </div>
 
+    <script src="audio.js"></script>
+    <script src="particles.js"></script>
     <script src="crops.js"></script>
     <script src="grid.js"></script>
     <script src="game.js"></script>

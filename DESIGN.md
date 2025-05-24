@@ -1,4 +1,4 @@
-# 🌾 Harvest Tactics - Game Design Document
+# 🌿 Grid Garden - Game Design Document
 *Devs That Jam 36-hour Challenge #14 - Farming Theme*
 
 ## 🎯 Core Concept
@@ -65,12 +65,15 @@ Turn-based grid-based farming puzzle game where players strategically place crop
 - [ ] Cursor/selection indicators
 
 ### Animations & Juice
-- [ ] Crop growing animations
-- [ ] Harvest particle effects
-- [ ] Tile placement feedback
-- [ ] Score popup animations
-- [ ] Turn transition effects
-- [ ] Satisfying "pop" sounds for actions
+- [x] Crop growing animations
+- [x] Harvest particle effects
+- [x] Tile placement feedback
+- [x] Score popup animations
+- [x] Turn transition effects
+- [x] Satisfying "pop" sounds for actions
+- [x] Screen shake effects
+- [x] Floating score text
+- [x] Enhanced button animations
 
 ### UI/UX
 - [ ] Main game screen layout
@@ -84,12 +87,14 @@ Turn-based grid-based farming puzzle game where players strategically place crop
 ## 🔊 Audio Systems
 
 ### Sound Effects
-- [ ] Tile placement sound
-- [ ] Crop growth sound
-- [ ] Harvest sound
-- [ ] Turn advance sound
-- [ ] UI click sounds
-- [ ] Success/failure audio feedback
+- [x] Tile placement sound
+- [x] Crop growth sound
+- [x] Harvest sound
+- [x] Turn advance sound
+- [x] UI click sounds
+- [x] Success/failure audio feedback
+- [x] Synergy bonus sounds
+- [x] Game over music
 
 ### Music
 - [ ] Background farming music (optional, low priority)
@@ -168,10 +173,13 @@ Turn-based grid-based farming puzzle game where players strategically place crop
 - [x] Enhanced crop information
 - [x] Visual synergy indicators
 
-### Phase 3: Polish & Submit (Hours 17-24)
-- [ ] Art pass
-- [ ] Audio implementation
-- [ ] Bug fixes
+### Phase 3: Polish & Submit (Hours 17-24) 🚧 IN PROGRESS
+- [x] Audio implementation (procedural sound effects)
+- [x] Particle effects system
+- [x] Enhanced animations and UI juice
+- [x] Screen shake effects
+- [x] Visual polish
+- [ ] Final bug fixes
 - [ ] Playtesting
 - [ ] Itch.io page setup
 

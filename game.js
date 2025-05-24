@@ -1,5 +1,5 @@
 // Main game state and logic
-class HarvestTacticsGame {
+class GridGardenGame {
     constructor() {
         this.canvas = document.getElementById('gameCanvas');
         this.grid = new Grid(this.canvas);
@@ -30,10 +30,17 @@ class HarvestTacticsGame {
         // Track scoring for feedback
         this.lastHarvestDetails = [];
         
+        // Initialize particle system
+        this.particleSystem = new ParticleSystem(this.canvas);
+        window.particleSystem = this.particleSystem;
+        
+        // Track time for particle updates
+        this.lastTime = performance.now();
+        
         // Start game loop
         this.gameLoop();
         
-        console.log('🌾 Harvest Tactics initialized!');
+        console.log('🌿 Grid Garden initialized!');
     }
 
     generateInitialCrops() {
@@ -81,10 +88,27 @@ class HarvestTacticsGame {
                 this.hideHelp();
             }
         });
+        
+        // Audio toggle button
+        document.getElementById('audioBtn').addEventListener('click', () => {
+            this.toggleAudio();
+        });
     }
 
     onCropPlaced(crop) {
         console.log(`Planted ${crop.type.name}! Moving to next crop.`);
+        
+        // Play placement sound
+        if (window.audioManager) {
+            window.audioManager.play('place');
+        }
+        
+        // Create placement particles
+        if (this.particleSystem) {
+            const x = (crop.x + crop.type.size.width/2) * this.grid.cellSize;
+            const y = (crop.y + crop.type.size.height/2) * this.grid.cellSize;
+            this.particleSystem.placementEffect(x, y);
+        }
         
         // Move to next crop in queue
         this.advanceCropQueue();
@@ -128,6 +152,11 @@ class HarvestTacticsGame {
         
         console.log(`Turn ${this.currentTurn + 1} ending...`);
         
+        // Play turn sound
+        if (window.audioManager) {
+            window.audioManager.play('turn');
+        }
+        
         // Advance turn counter
         this.currentTurn++;
         
@@ -140,6 +169,18 @@ class HarvestTacticsGame {
             this.lastHarvestDetails = harvestDetails.details;
             this.addScore(harvestDetails.totalScore);
             this.updateScoreBreakdown();
+            
+            // Play harvest sounds
+            if (window.audioManager) {
+                window.audioManager.play('harvest');
+                
+                // Play synergy sound if there are synergy bonuses
+                const hasSynergies = harvestDetails.details.some(d => d.synergies > 0);
+                if (hasSynergies) {
+                    window.audioManager.play('synergy', 300);
+                }
+            }
+            
             console.log(`Auto-harvested for ${harvestDetails.totalScore} points!`);
         }
         
@@ -171,6 +212,19 @@ class HarvestTacticsGame {
     addScore(points) {
         this.score += points;
         
+        // Play score sound
+        if (window.audioManager && points > 0) {
+            window.audioManager.play('score');
+        }
+        
+        // Enhanced score animation
+        UIAnimations.flashScore(this.score);
+        
+        // Create floating score text
+        const scoreElement = document.getElementById('score');
+        const rect = scoreElement.getBoundingClientRect();
+        UIAnimations.floatingText(`+${points}`, rect.right + 10, rect.top);
+        
         // Animate score increase (simple version)
         this.animateScoreIncrease(points);
     }
@@ -192,6 +246,11 @@ class HarvestTacticsGame {
     endGame() {
         this.gameOver = true;
         console.log(`Game Over! Final Score: ${this.score}`);
+        
+        // Play game over sound
+        if (window.audioManager) {
+            window.audioManager.play('gameOver');
+        }
         
         // Show game over screen
         document.getElementById('finalScore').textContent = this.score;
@@ -329,23 +388,53 @@ class HarvestTacticsGame {
     hideHelp() {
         document.getElementById('helpModal').classList.add('hidden');
     }
+    
+    toggleAudio() {
+        if (window.audioManager) {
+            const enabled = window.audioManager.toggle();
+            const audioBtn = document.getElementById('audioBtn');
+            
+            if (enabled) {
+                audioBtn.textContent = '🔊 Audio';
+                audioBtn.classList.remove('muted');
+                window.audioManager.play('click');
+            } else {
+                audioBtn.textContent = '🔇 Muted';
+                audioBtn.classList.add('muted');
+            }
+        }
+    }
 
     saveHighScore() {
-        const highScore = localStorage.getItem('harvestTacticsHighScore') || 0;
+        const highScore = localStorage.getItem('gridGardenHighScore') || 0;
         if (this.score > parseInt(highScore)) {
-            localStorage.setItem('harvestTacticsHighScore', this.score.toString());
+            localStorage.setItem('gridGardenHighScore', this.score.toString());
             console.log('New high score!');
         }
     }
 
     getHighScore() {
-        return parseInt(localStorage.getItem('harvestTacticsHighScore') || 0);
+        return parseInt(localStorage.getItem('gridGardenHighScore') || 0);
     }
 
     // Main game loop
     gameLoop() {
+        const currentTime = performance.now();
+        const deltaTime = currentTime - this.lastTime;
+        this.lastTime = currentTime;
+        
+        // Update particles
+        if (this.particleSystem) {
+            this.particleSystem.update(deltaTime);
+        }
+        
         // Render grid
         this.grid.render();
+        
+        // Render particles on top
+        if (this.particleSystem) {
+            this.particleSystem.render();
+        }
         
         // Continue loop
         requestAnimationFrame(() => this.gameLoop());
@@ -369,7 +458,7 @@ class HarvestTacticsGame {
 // Initialize game when page loads
 let game;
 document.addEventListener('DOMContentLoaded', () => {
-    game = new HarvestTacticsGame();
+    game = new GridGardenGame();
     
     // Make game accessible globally for debugging
     window.game = game;

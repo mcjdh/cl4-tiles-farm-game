@@ -28,18 +28,28 @@ class UIManager {
                 case ' ':
                 case 'enter':
                     e.preventDefault();
+                    if (window.audioManager) window.audioManager.play('click');
                     window.game.endTurn();
                     break;
                 case 'h':
                     e.preventDefault();
+                    if (window.audioManager) window.audioManager.play('click');
                     window.game.harvestAll();
                     break;
                 case 'r':
                     if (e.ctrlKey) {
                         e.preventDefault();
+                        if (window.audioManager) window.audioManager.play('click');
                         window.game.restart();
                     }
                     break;
+            }
+        });
+        
+        // Add click sounds to all buttons
+        document.addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON' && window.audioManager) {
+                window.audioManager.play('click');
             }
         });
     }
@@ -243,13 +253,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Show initial tip or help for new players
     setTimeout(() => {
-        const hasPlayedBefore = localStorage.getItem('harvestTacticsPlayed');
+        const hasPlayedBefore = localStorage.getItem('gridGardenPlayed');
         if (!hasPlayedBefore) {
             // First time player - show help modal
             setTimeout(() => {
                 if (window.game) {
                     window.game.showHelp();
-                    localStorage.setItem('harvestTacticsPlayed', 'true');
+                    localStorage.setItem('gridGardenPlayed', 'true');
                 }
             }, 2000);
         } else {

@@ -1,5 +1,58 @@
 ---
-description:
-globs:
-alwaysApply: false
+description: 
+globs: 
+alwaysApply: true
 ---
+# Development Workflow Guide
+
+## 36-Hour Timeline Management
+Track progress using the checkboxes in [DESIGN.md](mdc:DESIGN.md) to ensure we stay on schedule.
+
+## Phase 1: Core Prototype (Hours 1-8)
+**Goal**: Playable MVP with basic mechanics
+- Focus on core game loop first
+- No art polish yet - use simple shapes/colors
+- Test placement and turn mechanics immediately
+- **Milestone**: Can place crops, advance turns, see basic scoring
+
+## Phase 2: Full Gameplay (Hours 9-16)
+**Goal**: Complete feature set
+- Add all 5 crop types with different behaviors
+- Implement synergy scoring system
+- Build complete UI with all game states
+- **Milestone**: Full game from start to game over
+
+## Phase 3: Polish & Submit (Hours 17-24)
+**Goal**: Polished, submittable game
+- Art pass and visual consistency
+- Audio implementation and juice effects
+- Bug fixes and edge case handling
+- **Milestone**: Ready for itch.io submission
+
+## Development Priorities
+1. **Core mechanics first**: Grid → placement → turns → scoring
+2. **One feature at a time**: Complete each system before moving on
+3. **Test frequently**: Playtest after every major addition
+4. **No premature optimization**: Get it working, then make it pretty
+
+## Quality Gates
+- **Hour 8**: Must have playable core loop
+- **Hour 16**: Must have complete gameplay
+- **Hour 20**: Must have all content implemented
+- **Hour 24**: Must be submission-ready
+
+## When Things Go Wrong
+- **Behind schedule**: Cut advanced features, focus on core
+- **Bugs blocking progress**: Implement workarounds, note for later
+- **Feature creep**: Always refer back to [DESIGN.md](mdc:DESIGN.md) priorities
+
+## Daily Workflow
+1. Check current phase in [DESIGN.md](mdc:DESIGN.md)
+2. Pick next unchecked item in priority order
+3. Implement feature completely
+4. Test immediately
+5. Check off completed item
+6. Repeat
+
+Stay focused, test often, and keep the farming theme central!
+

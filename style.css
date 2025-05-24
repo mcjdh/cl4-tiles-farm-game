@@ -208,6 +208,23 @@ body {
     box-shadow: 0 6px 12px rgba(70, 130, 180, 0.4);
 }
 
+.btn-audio {
+    background: #9932CC;
+    color: white;
+    box-shadow: 0 4px 8px rgba(153, 50, 204, 0.3);
+}
+
+.btn-audio:hover {
+    background: #BA55D3;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(153, 50, 204, 0.4);
+}
+
+.btn-audio.muted {
+    background: #888;
+    color: #ccc;
+}
+
 /* Game Over Screen */
 .game-over {
     position: fixed;

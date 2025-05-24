@@ -106,6 +106,17 @@ class Grid {
             const baseScore = crop.harvest();
             const synergies = CropManager.calculateSynergies(this.crops, crop);
             
+            // Create harvest particle effects
+            if (window.particleSystem) {
+                const x = (crop.x + crop.type.size.width/2) * this.cellSize;
+                const y = (crop.y + crop.type.size.height/2) * this.cellSize;
+                window.particleSystem.harvestEffect(x, y);
+                
+                if (synergies > 0) {
+                    window.particleSystem.synergyEffect(x, y);
+                }
+            }
+            
             details.push({
                 crop: crop.type.name,
                 baseScore: baseScore,
